@@ -1,0 +1,2 @@
+# INTENTION
+The INTENTION project is a European subproject that aims to research the impact on the physical human-exoskeleton interaction of the traditional controllers of trajectory and admittance, widely used in the literature, compared to control based on the detection of the onset of muscle contraction (EMG onset) and evaluate the feasibility of using intramuscular EMG signal versus surface EMG signals.
