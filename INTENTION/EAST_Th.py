@@ -5,6 +5,7 @@ import time
 import crc8 as crc8
 #from scipy.signal import hilbert
 from scipy import signal
+from threading import Thread
 
 #SerialCOM = '/dev/ttyACM0'
 #bau = 921600
@@ -184,142 +185,117 @@ ConfString[23] = tremor_detec_muscle
 
 ConfString[24] = crc8.fcn_crc8_ot(ConfString,24)#254
 ConfString_out = bytes(ConfString)
-#ConfString_aux=bytes([25,9,0,127,13,0,0,0,0,0,0,0,0,30,30,1,4,0,0,40,12,12,15,1,132])
-#print(ConfString)
-
-
-def EASTrecord(repeat):
-
-#    fs_EMG = 64
-#    PlotTime = 0.1
-#    NumChEMG = 8
-#    Fsamp = 2000
-#    NumCyc=int(repeat/0.1)
-#    Fsamp = 1000
-#    NumCyc=int(repeat/0.05)
-
-#    cutoff = 20
-    b, a = signal.butter(2,6/(2000/2.),btype='low')
-    Offset = np.array([520, -710, -150, -480, -348, 328, -437,308])
-    MVC = np.array([1337, 1337, 1281.046, 1542.164, 9891.648, 551.46])
-    
-    try:
-        s = serial.Serial(port, bau, timeout=12)    
-    except:
-        raise NameError("ERROR: serial port connet")
-
-#        data = np.array([])
-    
-    # ConfString 1000 hz
+# ConfString 1000 hz
 #    ConfString=bytes([25,9,0,127,13,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,254])
 #    # ConfString 2000 hz
 #    ConfString=bytes([25,9,0,127,13,0,0,0,0,0,0,0,0,30,30,1,4,0,0,40,12,12,15,1,132])
-    s.write(ConfString_out)
+#print(ConfString)
 
-    
-#    acq = int(PlotTime*NumChEMG*Fsamp*2)
-#    Canalacq = int(acq/(2*NumChEMG))
-#    tam_ang=50
-#    Time_emg = np.linspace(0,((Canalacq*tam_ang*repeat)/Fsamp),Canalacq*tam_ang*repeat)
-    
-   
-    Canal1_Raw_Total = []
-    Canal2_Raw_Total = []
-    
-#    Canal1_env =  np.zeros(tam_ang)
-#    Canal2_env = np.zeros(tam_ang)
-#    Canal3_env = np.zeros(tam_ang)
+b, a = signal.butter(2,6/(2000/2.),btype='low')
+Offset = np.array([520, -710, -150, -480, -348, 328, -437,308])
+MVC = np.array([1337, 1337, 1281.046, 1542.164, 9891.648, 551.46])
 
-#    Canal1_env_Inter = []
-#    Canal2_env_Inter = []
-    
-    Canal1_raw = np.zeros(Canalacq)
-    Canal2_raw = np.zeros(Canalacq)
-    
-    Canal1_Env_Total=[]
-    Canal2_Env_Total=[]
-           
-    arraysize = Fsamp*2
-    chansize = int(Fsamp*PlotTime)
-    arraychsize = int(arraysize-chansize)
+
+Canal1_Raw_Total = []
+Canal2_Raw_Total = []
+
+Canal1_raw = np.zeros(Canalacq)
+Canal2_raw = np.zeros(Canalacq)
+
+arraysize = Fsamp*2
+chansize = int(Fsamp*PlotTime)
+arraychsize = int(arraysize-chansize)
+
+emgArray1 = np.zeros(arraysize)
+emgArray2 = np.zeros(arraysize)
+
+Canal1_Env_Total = []
+Canal2_Env_Total = []
+
+Canal1 = []
+Canal2 = []
 #    print("arraysize",arraysize,"chansize",chansize,"arraychsize",arraychsize)
-    
-    emgArray1 = np.zeros(arraysize)
-    emgArray2 = np.zeros(arraysize)
-    
-#    start_comp_time = time.perf_counter()
 
+
+
+def getData(t):
+    global Canal1_Env_Total, Canal2_Env_Total, Canal1_Raw_Total, Canal2_Raw_Total
     
-    t_inicio=time.time() 
-    while time.time()-t_inicio < repeat:
-#            print("total Canal 1",len(Canal1_EAST_Total), " total Canal 2",len(Canal2_EAST_Total))
-#        t_inicio_medio=time.time() 
-        Sig = s.read(acq)
-        k = 0
-        c = 0
-        info = [Sig[i:i+2] for i in range(0, len(Sig), 2)]  
-        
-        while k < (acq/2):
-            for j in range(0,NumChEMG,1):
-                if j == 0:
-                    Canal1_raw[c] = (ConvFact*(int.from_bytes(info[k],byteorder='little', signed=True)) - Offset[0])/MVC[0]
-#                        Canal1_EAST_Total=np.concatenate((Canal1_EAST_Total,Canal1_EAST[c]),axis=None)
-#                        Canal1_EAST_Total.append(Canal1_EAST[c])
-                    Canal1_Raw_Total=np.concatenate((Canal1_Raw_Total,Canal1_raw[c]),axis=None)
-        
-                elif j == 1:
-                    Canal2_raw[c] = (ConvFact*(int.from_bytes(info[k],byteorder='little', signed=True)) - Offset[1])
-#                        Canal2_EAST_Total.append(Canal2_EAST[c])
-#                        Canal2_EAST_Total=np.concatenate((Canal2_EAST_Total,Canal2_EAST[c]),axis=None)
-                    Canal2_Raw_Total=np.concatenate((Canal2_Raw_Total,Canal2_raw[c]),axis=None)
-                 
-    #            elif j == 2:
-    #                Canal3[c] = (ConvFact*(int.from_bytes(info[k],byteorder='little', signed=True))  - Offset[2])/MVC[2]
-    #                Canal3_Total.append(Canal3[c])
-
-                k=k+1 
-            c=c+1
-
-      ##ENVELOPE  
-#        c1R=Canal1_raw-np.mean(Canal1_raw)
-#        Canal1_env=np.abs(hilbert(c1R))
-        
-#        c2R=Canal2_raw-np.mean(np.abs(Canal2_raw))
-#        Canal2_env=np.real(np.abs(hilbert(c2R)))
-        
-        emgArray1[0:arraychsize] = emgArray1[chansize:arraysize]
-        emgArray1[arraychsize:arraysize] = Canal1_raw
-        
-        emgAbs=np.abs(emgArray1)
-        Canal1_env=signal.filtfilt(b,a,emgAbs)    
-        Canal1 = Canal1_env[arraychsize:arraysize]
-        Canal1_Env_Total=np.concatenate((Canal1_Env_Total,Canal1),axis=None)
-        
-        emgArray2[0:arraychsize] = emgArray2[chansize:arraysize]
-        emgArray2[arraychsize:arraysize] = Canal2_raw
-   
-        emgAbs=np.abs(emgArray2)
-        Canal2_env=signal.filtfilt(b,a,emgAbs)
-        Canal2 = Canal2_env[arraychsize:arraysize]
-        Canal2_Env_Total=np.concatenate((Canal2_Env_Total,Canal2),axis=None)
+    with serial.Serial(port, bau, timeout=12) as serialComunication:
+        serialComunication.write(ConfString_out)
+        t_inicial = time.time()
+        while time.time()-t_inicial < t:
+            
+            line = serialComunication.read(acq)
+            try:
+                k = 0
+                c = 0
+                info = [line[i:i+2] for i in range(0, len(line), 2)]  
                 
-#        t_Instan = time.time() - t_inicio_medio 
-        
-#        Canal1_Env_Total=np.concatenate((Canal1_Env_Total,Canal1_env[arraychsize:arraysize]),axis=None)
-##        Canal2_Env_Total=np.concatenate((Canal2_Env_Total,Canal2_env),axis=None)
-#        Canal2_Env_Total=np.concatenate((Canal2_Env_Total,Canal2_env[arraychsize:arraysize]),axis=None)
+                while k < (acq/2):
+                    for j in range(0,NumChEMG,1):
+                        if j == 0:
+                            Canal1_raw[c] = (ConvFact*(int.from_bytes(info[k],byteorder='little', signed=True)) - Offset[0])/MVC[0]
+                            Canal1_Raw_Total=np.concatenate((Canal1_Raw_Total,Canal1_raw[c]),axis=None)
+                        elif j == 1:
+                            Canal2_raw[c] = (ConvFact*(int.from_bytes(info[k],byteorder='little', signed=True)) - Offset[1]) 
+                            Canal2_Raw_Total=np.concatenate((Canal2_Raw_Total,Canal2_raw[c]),axis=None)
+                            
+                        k=k+1 
+                    c=c+1
                 
+                #envelope
+                        #falta bloquear el acceso a Canal1_raw
+                emgArray1[0:arraychsize] = emgArray1[chansize:arraysize]
+                emgArray1[arraychsize:arraysize] = Canal1_raw
+                
+                emgAbs=np.abs(emgArray1)
+                Canal1_env=signal.filtfilt(b,a,emgAbs)    
+                Canal1 = Canal1_env[arraychsize:arraysize]
+                Canal1_Env_Total=np.concatenate((Canal1_Env_Total,Canal1),axis=None)
+                
+                emgArray2[0:arraychsize] = emgArray2[chansize:arraysize]
+                emgArray2[arraychsize:arraysize] = Canal2_raw
+                
+                emgAbs=np.abs(emgArray2)
+                Canal2_env=signal.filtfilt(b,a,emgAbs)   
+                Canal2 = Canal2_env[arraychsize:arraysize]
+                Canal2_Env_Total=np.concatenate((Canal2_Env_Total,Canal2),axis=None)
 
-#    print("t_Total:",time.time()-t_inicio)  
-#    print("t_Instan:",t_Instan)
-    Canal1_Env_Total = Canal1_Env_Total[chansize:-1]
-    Canal2_Env_Total = Canal2_Env_Total[chansize:-1]
-    try:
-        ConfString=bytes([25,0,0,120,17,1,1,1,1,1,1,1,1,30,30,4,1,1,0,10,10,10,10,1,25]) 
-        s.write(ConfString)
-        s.close()
-    except:
-        raise NameError("ERROR: close serial port process")
+#                sfrecive.release()
+#                sfrepeat.acquire()
+                
+            except:
+                pass
+#        plt.plot(Canal1_Env_Total)
+#        sfprocess.acquire() 
+        Canal1_Env_Total = Canal1_Env_Total[chansize:-1]
+        Canal2_Env_Total = Canal2_Env_Total[chansize:-1]
+        try:
+            ConfString=bytes([25,0,0,120,17,1,1,1,1,1,1,1,1,30,30,4,1,1,0,10,10,10,10,1,25]) 
+            serialComunication.write(ConfString)
+            serialComunication.close()
+        except:
+            raise NameError("ERROR: close serial port process")
+
     
-
+def EASTrecord(repeat):
+    global Canal1_Raw_Total, Canal2_Raw_Total, Canal1_Env_Total, Canal2_Env_Total
+#    print("EASThread Start")
+#    Thread(target = getData1, args = (repeat)).start
+    dataCollector = Thread(target = getData, args = (repeat,))
+    
+    dataCollector.start()
+    dataCollector.join()
+#    print("EASThread END")
+#    
     return Canal1_Raw_Total, Canal2_Raw_Total, Canal1_Env_Total, Canal2_Env_Total
+
+
+
+
+
+
+
+
+

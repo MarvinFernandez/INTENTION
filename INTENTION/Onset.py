@@ -361,20 +361,20 @@ def Onset_Mode(objPCAN, repeat, assistance, features):
                 if detectionOn[0] and detectionOn[1]:
                     exo_Dinamicmove(objPCAN,msg)
                     Onset_Total=np.concatenate((Onset_Total,[11]),axis=None)
-                    print("Exo UP")
+                    print("Exo UP1")
                     
+                elif (stillUp[0] and detectionOn[1]) or (detectionOn[0] and stillUp[1]):
+                    exo_Dinamicmove(objPCAN,msg)
+                    Onset_Total=np.concatenate((Onset_Total,[11]),axis=None)
+                    print("Exo UP2")
+                    
+#                elif detectionOn[0] and stillUp[1]:
+#                    exo_Dinamicmove(objPCAN,msg)
+#                    Onset_Total=np.concatenate((Onset_Total,[11]),axis=None)
+#                    print("Exo UP")
                 elif stillUp[0] and stillUp[1]:
                     print("keep")
-                elif stillUp[0] and detectionOn[1]:
-                    exo_Dinamicmove(objPCAN,msg)
-                    Onset_Total=np.concatenate((Onset_Total,[11]),axis=None)
-                    print("Exo UP")
                     
-                elif detectionOn[0] and stillUp[1]:
-                    exo_Dinamicmove(objPCAN,msg)
-                    Onset_Total=np.concatenate((Onset_Total,[11]),axis=None)
-                    print("Exo UP")
-
                 else:
                     Onset_Total=np.concatenate((Onset_Total,[00]),axis=None)
 #                    print("Exo DOWN")                

@@ -18,10 +18,10 @@ from EmgTorque_Lower import EmgTorque
 from motReader import motReader
 from Gait_Model import *
 from Exo_ID import *
-from Onset import Onset_Mode
+from Onset_Thread import Onset_Mode
 from EMG_Proportional import *
 from Decoder import *
-from EAST import EASTrecord
+from EAST_T import EASTrecord
 from ImpedanceController import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
@@ -33,6 +33,7 @@ from scipy import signal
 from scipy.signal import hilbert
 from scipy.signal import filtfilt,butter,iirnotch,freqz
 from scipy.fftpack import fft, fftshift, fftfreq
+from threading import Thread
 import tkinter as tk
 from tkinter import *    # Carga módulo tk (widgets estándar)
 from tkinter import ttk, constants  # Carga ttk (para widgets nuevos 8.5+)
@@ -145,9 +146,13 @@ def OnsetEAST():
     features[0] = float(cuadroOnset.get())
     features[1] = float(cuadroOffset.get())
     features[2] = float(period_off.get())
-    features[3] = "%.3f" %(np.std(Canal2_Env_Total)*1.5)
-    features[4] = "%.3f" %(np.std(Canal2_Env_Total)*1.5)
-    features[5] = float(period_off.get())
+    features[3] = float(cuadroOnset2.get())
+    features[4] = float(cuadroOffset2.get())
+    features[5] = float(period_off2.get())
+    
+#    features[3] = "%.3f" %(np.std(Canal2_Env_Total)*1.5)
+#    features[4] = "%.3f" %(np.std(Canal2_Env_Total)*1.5)
+#    features[5] = float(period_off.get())
     
     rawData = Onset_Mode(objPCAN, repeat, assistance, features)
 #    rawData = [Canal1_Total, Canal2_Total, Onset, 0]
@@ -504,7 +509,7 @@ def battery(event):
 def Footpressure(event):
     
     if cuadroRepeat.get() =="":
-        repeat=8
+        repeat=10
     else:
         repeat=int(cuadroRepeat.get())
             
@@ -512,11 +517,14 @@ def Footpressure(event):
 #    print(t0,time.time())
 #    _ = time.perf_counter() + delay/1000
 #    while time.time()-t0 < repeat:
-    rheel,rtoe,lheel,ltoe = Footsensor(objPCAN,repeat)
+#    rheel,rtoe,lheel,ltoe = Footsensor(objPCAN,repeat)
+    valor = Footsensor(objPCAN,repeat)
     
-    feedbackBox.insert(END,"Battery Voltage: " + str(rheel[-1]) + "V")
-#    window=Tk()
-#    window.title("rheel")
+#    feedbackBox.insert(END,"Battery Voltage: " + str(rheel[-1]) + "V")
+#    feedbackBox.insert(END,"Battery Voltage: " + str(voltage[-1]) + "V")
+    window=Tk()
+    window.title("rheel")
+    plot_button=Button(master=window, command=EMGPlot(valor,window))
 #    plot_button=Button(master=window, command=plot_sample(rheel,window))
 #    window=Tk()
 #    window.title("rtoe")
@@ -533,20 +541,32 @@ def Footpressure(event):
     
 def btEAST(event):
     print("BEGINING") 
-    global Canal1_Env_Total, Canal2_Env_Total
+    global Canal1_Env_Total, Canal2_Env_Total, Canal1_Raw_Total, Canal2_Raw_Total
     try:
         if cuadroRepeat.get() =="":
-            repeat=5
+            repeat=3
 #            raise TypeError('"Cycles" EMPTY')
         else:
             repeat=int(cuadroRepeat.get())
         
         Data = EASTrecord(repeat)
+        
+    
         interactionMSG.set("Serial Port closed")
         feedbackBox.insert(END, "Serial Port closed")
-#        Canal1_Raw_Total = Data[0]
+        Canal1_Raw_Total = Data[0]
+        Canal2_Raw_Total = Data[1]
         Canal1_Env_Total = Data[2]
         Canal2_Env_Total = Data[3]
+        
+        
+#        b, a = signal.butter(2,6/(2000/2.),btype='low')
+#        emgAbs=np.abs(Data[0])
+#        envelope=signal.filtfilt(b,a,emgAbs)
+        
+#        Data[0]=Canal1_env
+#        print(Canal1_env)
+
         
         max_value.set("%.3f" % max(Canal1_Env_Total))
         min_value.set("%.3f" %min(Canal1_Env_Total))
@@ -580,7 +600,7 @@ def btEAST(event):
             plot_button=Button(master=window, command = EMGPlot(Data,window))
 #            window=Tk()
 #            window.title("enve total")
-#            plot_button=Button(master=window, command = plot_sample(envelope,window))
+#            plot_button=Button(master=window, command = plot_sample(envelope[200:-1],window))
 
             window.mainloop()
 #            print("END")           
