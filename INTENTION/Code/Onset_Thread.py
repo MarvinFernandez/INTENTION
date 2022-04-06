@@ -10,7 +10,7 @@ from threading import Thread, Semaphore
 
 from PCANBasic import TPCANMsg, PCAN_PCIBUS3, PCAN_MESSAGE_STANDARD, PCAN_ERROR_QRCVEMPTY
 from EAST import EAST, OnsetGetEMG
-from EXO_H3 import Exo_H3, ReadAngle, Exo_waitfor_move
+from EXO_H3 import Exo_H3, ReadAngle, Exo_waitfor_move, ReadTorque
 
 
 #from INTENTIONinterface import EMGPlot
@@ -675,13 +675,20 @@ def getData(repeat, features, max_minFeatures, semaforo, sfSend, sfprocess, sfRe
             
 
 
-def Onset_Mode(objPCAN, seconds, assistance, stiffness, features, max_minFeatures):
+def Onset_Mode(objPCAN, seconds, assistance, stiffness, features, max_minFeatures, intra):
     
     
     msg = TPCANMsg()
     msg.MSGTYPE = PCAN_MESSAGE_STANDARD
     msg.ID = 72
     msg.LEN = 6
+    msg.DATA[0] = 30    
+    msg.DATA[1] = 5
+    msg.DATA[2] = 5
+    msg.DATA[3] = -13
+    msg.DATA[4] = 5
+    msg.DATA[5] = 20
+    objPCAN.Write(PCAN_PCIBUS3,msg) 
     
     ## CONTROL TYPE (1:POSITION / 2:STIFFNESS / 3:TORQUE / 4:DISABLE / 5:STOPPED)
     controlType = 2
@@ -738,48 +745,53 @@ def Onset_Mode(objPCAN, seconds, assistance, stiffness, features, max_minFeature
     
         sfprocess = Semaphore(0) # semaforo de fin sincronizado de los threads
         sfMove = Semaphore(0) # movimiento del exo
-        sfRead = Semaphore(1) # read exo angles
+        sfRead = Semaphore(2) # read exo joins (angle / torque)
         sfSend = Semaphore(0) # controla el mandar trigger de movimiento al exo
-        sfexit = Semaphore(0) # break forzoso
+        sfexit = Semaphore(0) # breack forzoso
         
-        dataCollector = EAST(target = OnsetGetEMG, args = (features, max_minFeatures, sfMove, sfSend, 
+        dataCollector = EAST(target = OnsetGetEMG, args = (features, max_minFeatures, intra, sfMove, sfSend, 
                                                            sfprocess, sfRead, sfexit, seconds)) 
         
         anglefn = Exo_H3(target = ReadAngle, args = (objPCAN,sfprocess,sfRead,sfexit)) 
+        torquefn = Exo_H3(target = ReadTorque, args = (objPCAN,sfprocess,sfRead,sfexit)) 
         exoMovement = Exo_H3(target = Exo_waitfor_move, args = (objPCAN, msg, sfMove, sfSend, sfprocess, sfexit)) 
         
-        print("start")
+#        print("start")
         
         anglefn.start()
+        torquefn.start()
         exoMovement.start()
         dataCollector.start() 
         
-#        t_inicial = time.time()
-#        while time.time()-t_inicial < seconds:
-#            pass
+        
         sfprocess.acquire()
         
         sfexit._value = 1
         sfMove.release()
         sfRead.release()
+        sfRead.release()
         
-        print("stop")
+#        print("stop")
         
         anglesArray = anglefn.join()
+        torqueArray = torquefn.join()
         trajectories = exoMovement.join()
         emg, Onset_Total = dataCollector.join()
         
     except KeyboardInterrupt:
+        print("INTERRUT3")
         sfexit._value = 1
         sfMove.release()
         sfRead.release()
+        sfRead.release()
         anglesArray = anglefn.join()
+        torqueArray = torquefn.join()
         trajectories = exoMovement.join()
         emg, Onset_Total = dataCollector.join()
-        print("INTERRUT3")
+        
 
 
-    return Onset_Total, anglesArray, emg, trajectories
+    return Onset_Total, anglesArray, emg, trajectories, torqueArray
 
 
 

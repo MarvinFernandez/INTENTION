@@ -106,6 +106,127 @@ def TurnOn(objPCAN):
     return anglejoin
 
 
+def readAngle(objPCAN,repeat):
+    
+    joinangle = 0
+    rHip_Record = 0
+    rKnee_Record = 0
+    rAnkle_Record = 0
+    lHip_Record = 0
+    lKnee_Record = 0
+    lAnkle_Record = 0
+    
+   
+    if repeat==0:
+        read=objPCAN.Read(PCAN_PCIBUS3)
+        
+        while read[0] != PCAN_ERROR_QRCVEMPTY: #32 = buffere empty
+            if read[1].ID == 110:
+                joinangle=read[1].DATA
+            read=objPCAN.Read(PCAN_PCIBUS3)
+    
+        anglejoin=np.array([int(joinangle[0]),int(joinangle[1]),int(joinangle[2]),int(joinangle[3]),
+                            int(joinangle[4]),int(joinangle[5])]) 
+        if joinangle != 0:
+            #TimeStamp
+#            recTime=datetime.now().time()
+#            print("rec")
+#            print("min: ", recTime.minute, " sec: ", recTime.second, " mls: ", recTime.microsecond)
+            
+            if anglejoin[0]>128:
+                anglejoin[0]=anglejoin[0]-2**8
+            if anglejoin[1]>128:
+                anglejoin[1]=anglejoin[1]-2**8
+            if anglejoin[2]>128:
+                anglejoin[2]=anglejoin[2]-2**8
+            if anglejoin[3]>128:
+                anglejoin[3]=anglejoin[3]-2**8
+            if anglejoin[4]>128:
+                anglejoin[4]=anglejoin[4]-2**8
+            if anglejoin[5]>128:
+                anglejoin[5]=anglejoin[5]-2**8
+                
+            rHip_Record=int(anglejoin[0])
+            rKnee_Record=int(anglejoin[1])
+            rAnkle_Record=int(anglejoin[2])
+            lHip_Record=int(anglejoin[3])
+            lKnee_Record=int(anglejoin[4])
+            lAnkle_Record=int(anglejoin[5])
+    
+    
+    t0=time.time() 
+    while time.time()-t0 < repeat:
+        
+        read=objPCAN.Read(PCAN_PCIBUS3)
+        
+        while read[0] != PCAN_ERROR_QRCVEMPTY: #32 = buffere empty
+            if read[1].ID == 110:
+                joinangle=read[1].DATA
+            read=objPCAN.Read(PCAN_PCIBUS3)
+    
+        anglejoin=np.array([int(joinangle[0]),int(joinangle[1]),int(joinangle[2]),int(joinangle[3]),
+                            int(joinangle[4]),int(joinangle[5])]) 
+        if joinangle != 0:
+            #TimeStamp
+#            recTime=datetime.now().time()
+#            print("rec")
+#            print("min: ", recTime.minute, " sec: ", recTime.second, " mls: ", recTime.microsecond)
+            
+            if anglejoin[0]>128:
+                anglejoin[0]=anglejoin[0]-2**8
+            if anglejoin[1]>128:
+                anglejoin[1]=anglejoin[1]-2**8
+            if anglejoin[2]>128:
+                anglejoin[2]=anglejoin[2]-2**8
+            if anglejoin[3]>128:
+                anglejoin[3]=anglejoin[3]-2**8
+            if anglejoin[4]>128:
+                anglejoin[4]=anglejoin[4]-2**8
+            if anglejoin[5]>128:
+                anglejoin[5]=anglejoin[5]-2**8
+                
+            rHip_Record=np.concatenate((rHip_Record,int(anglejoin[0])),axis=None)
+            rKnee_Record=np.concatenate((rKnee_Record,int(anglejoin[1])),axis=None)
+            rAnkle_Record=np.concatenate((rAnkle_Record,int(anglejoin[2])),axis=None)
+            lHip_Record=np.concatenate((lHip_Record,int(anglejoin[3])),axis=None)
+            lKnee_Record=np.concatenate((lKnee_Record,int(anglejoin[4])),axis=None)
+            lAnkle_Record=np.concatenate((lAnkle_Record,int(anglejoin[5])),axis=None) 
+                
+        else:
+            pass
+        
+    anglesArray = [rHip_Record, rKnee_Record, rAnkle_Record, lHip_Record, lKnee_Record, lAnkle_Record]
+    
+    return anglesArray
+
+def JoinTorque(objPCAN,repeat):
+    read=objPCAN.Read(PCAN_PCIBUS3)
+    joinTorque=0
+    rHip = []
+    rKnee = []
+    rAnkle = []
+    lHip = []
+    lKnee = []
+    lAnkle = []
+    
+    t0=time.time() 
+    while time.time()-t0 < repeat:
+        while read[0] != PCAN_ERROR_QRCVEMPTY: #32 = buffere empty
+            if read[1].ID == 120:#130=foot switch / 120=join Torque
+                joinTorque=read[1].DATA
+                rHip=np.concatenate((rHip,joinTorque[0]),axis=None)
+                rKnee=np.concatenate((rKnee,joinTorque[1]),axis=None)
+                rAnkle=np.concatenate((rAnkle,joinTorque[2]),axis=None)
+                lHip=np.concatenate((lHip,joinTorque[3]),axis=None)
+                lKnee=np.concatenate((lKnee,joinTorque[4]),axis=None)
+                lAnkle=np.concatenate((lAnkle,joinTorque[5]),axis=None)
+            read=objPCAN.Read(PCAN_PCIBUS3)
+    torque=np.array([rHip,rKnee,rAnkle,lHip,lKnee,lAnkle])    
+   
+    return torque
+
+
+
 def Footsensor(objPCAN,repeat):
     
     read=objPCAN.Read(PCAN_PCIBUS3)
@@ -119,7 +240,7 @@ def Footsensor(objPCAN,repeat):
     t0=time.time() 
     while time.time()-t0 < repeat:
         while read[0] != PCAN_ERROR_QRCVEMPTY: #32 = buffere empty
-            if read[1].ID == 130:
+            if read[1].ID == 130:#130=foot switch / 120=join Torque
                 footsensored=read[1].DATA
                 rheel=np.concatenate((rheel,footsensored[0]),axis=None)
                 rtoe=np.concatenate((rtoe,footsensored[1]),axis=None)

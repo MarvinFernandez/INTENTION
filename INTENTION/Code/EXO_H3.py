@@ -5,6 +5,8 @@ import time
 from threading import Thread
 from PCANBasic import PCAN_PCIBUS3, PCAN_ERROR_QRCVEMPTY
 
+#from datetime import datetime
+
 #%% ANGLES
 
 # First Step Right leg
@@ -25,12 +27,25 @@ Lhip_rstep = np.array([30,29,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0,-2,-4,-6,-7
 Lknee_rstep = np.array([3,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,3,4,5])
 Lankle_rstep = np.array([5,4,3,3,2,3,4,6,7,8,10,11,11,12,12,12,12,13,13,14,16,17,18,19,20])
 
-Rhip_lstep = np.array([30,29,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0,-2,-3,-5,-6,-8,-9,-10,-11,-12])
-Rknee_lstep = np.array([4,3,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4])
-Rankle_lstep = np.array([5,4,3,2,2,3,4,6,7,8,10,11,11,12,12,12,12,13,13,14,16,17,18,19,20,20])
-Lhip_lstep = np.array([-12,-12,-13,-13,-14,-14,-14,-15,-15,-14,-13,-11,-8,-5,-1,4,8,12,16,20,23,26,28,29,30])
-Lknee_lstep = np.array([5,6,7,8,9,11,13,16,20,15,32,39,50,58,60,57,48,39,31,22,14,9,7,6,5])
-Lankle_lstep = np.array([20,20,19,17,15,12,9,4,-1,-7,-11,-13,-12,-8,-3,1,5,7,8,8,7,6,6,6,6])
+
+#Rhip_lstep = np.array([30,29,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0,-2,-3,-5,-6,-8,-9,-10,-11,-12])
+#Rknee_lstep = np.array([4,3,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4])
+#Rankle_lstep = np.array([5,4,3,2,2,3,4,6,7,8,10,11,11,12,12,12,12,13,13,14,16,17,18,19,20,20])
+#Lhip_lstep = np.array([-12,-12,-13,-13,-14,-14,-14,-15,-15,-14,-13,-11,-8,-5,-1,4,8,12,16,20,23,26,28,29,30])
+#Lknee_lstep = np.array([5,6,7,8,9,11,13,16,20,15,32,39,50,58,60,57,48,39,31,22,14,9,7,6,5])
+#Lankle_lstep = np.array([20,20,19,17,15,12,9,4,-1,-7,-11,-13,-12,-8,-3,1,5,7,8,8,7,6,6,6,6])
+
+
+Rhip_lstep = np.array([30,29,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0,-2,-4,-6,-7,-9,-10,-11,-11])
+Rknee_lstep = np.array([3,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,3,4,5])
+Rankle_lstep = np.array([5,4,3,3,2,3,4,6,7,8,10,11,11,12,12,12,12,13,13,14,16,17,18,19,20])
+
+Lhip_lstep = np.array([-13,-14,-15,-15,-14,-14,-13,-12,-11,-9,-6,-2,2,6,10,13,16,18,21,24,26,28,29,30,30])
+Lknee_lstep = np.array([5,7,9,11,14,17,21,27,33,40,49,56,59,60,57,46,35,26,19,13,9,7,6,5])
+Lankle_lstep = np.array([20,20,19,17,15,12,9,4,-1,-7,-12,-14,-12,-8,-3,1,5,7,8,8,7,6,6,6,6])
+
+
+
 
 
 #Rhip_lstep = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
@@ -137,7 +152,7 @@ def Exo_move(objPCAN, msg, sfprocess, sfMove, sfexit):
     fstep=1
     
     print("move ready")
-    while not sfprocess._value:
+    while not sfprocess._value: # while proces is active
         
         sfMove.acquire() 
         if sfexit._value:
@@ -170,7 +185,7 @@ def Exo_move(objPCAN, msg, sfprocess, sfMove, sfexit):
                 lAnkle_Sent=np.concatenate((lAnkle_Sent,Lankle[index_Step]),axis=None)
                 time.sleep(0.1)
 #        else:
-        for stepsize in range(0,2): 
+        for stepsize in range(0,2): # makes two steps
             
             if not stepsize:
 #                print("L step: ")
@@ -236,6 +251,14 @@ def Exo_waitfor_move(objPCAN, msg, sfMove, sfSend, sfprocess, sfexit):
     fstep=1
     stepsize = 0
     
+#    msg.DATA[0] = 30
+#    msg.DATA[1] = 5
+#    msg.DATA[2] = 5
+#    msg.DATA[3] = -13
+#    msg.DATA[4] = 5
+#    msg.DATA[5] = 20
+#    objPCAN.Write(PCAN_PCIBUS3,msg) 
+    
     while not sfprocess._value:
 
         sfMove.acquire()
@@ -243,7 +266,7 @@ def Exo_waitfor_move(objPCAN, msg, sfMove, sfSend, sfprocess, sfexit):
             break
         
         if fstep:
-            print("FS step: ")#MUEVE PIERNA IZQUIERDA
+            print("FS step: DERECHA")#MUEVE PIERNA DERECHA
             fstep = 0
             Rhip = FS_Rhip_ang
             Rknee = FS_Rknee_ang
@@ -293,7 +316,12 @@ def Exo_waitfor_move(objPCAN, msg, sfMove, sfSend, sfprocess, sfexit):
 #            Lhip = Lhip_rstep
 #            Lknee = Lknee_rstep
 #            Lankle = Lankle_rstep 
-                
+        
+        #TimeStamp
+#        sendTime=datetime.now().time()
+#        print("send")
+#        print("min: ", sendTime.minute, " sec: ", sendTime.second, " mls: ", sendTime.microsecond)
+        
         for index_Step in range(0,len(Rhip)-1,1):
             msg.DATA[0] = Rhip[index_Step]
             msg.DATA[1] = Rknee[index_Step]
@@ -302,15 +330,29 @@ def Exo_waitfor_move(objPCAN, msg, sfMove, sfSend, sfprocess, sfexit):
             msg.DATA[4] = Lknee[index_Step]
             msg.DATA[5] = Lankle[index_Step]
             objPCAN.Write(PCAN_PCIBUS3,msg)  
-            
+                            
             rHip_Sent=np.concatenate((rHip_Sent,Rhip[index_Step]),axis=None)
             rKnee_Sent=np.concatenate((rKnee_Sent,Rknee[index_Step]),axis=None)
             rAnkle_Sent=np.concatenate((rAnkle_Sent,Rankle[index_Step]),axis=None)
             lHip_Sent=np.concatenate((lHip_Sent,Lhip[index_Step]),axis=None)
             lKnee_Sent=np.concatenate((lKnee_Sent,Lknee[index_Step]),axis=None)
             lAnkle_Sent=np.concatenate((lAnkle_Sent,Lankle[index_Step]),axis=None)
+            
+#            current_Rhip = Rhip[index_Step]
+#            current_Rknee = Rhip[index_Step]
+#            current_Rankle = Rhip[index_Step]
+#            current_Lhip = Rhip[index_Step]
+#            current_Lknee = Rhip[index_Step]
+#            current_Lankle = Rhip[index_Step]
             time.sleep(0.1)
-                
+            
+#        rHip_Sent=np.concatenate((rHip_Sent,current_Rhip),axis=None)
+#        rKnee_Sent=np.concatenate((rKnee_Sent,current_Rknee),axis=None)
+#        rAnkle_Sent=np.concatenate((rAnkle_Sent,current_Rankle),axis=None)
+#        lHip_Sent=np.concatenate((lHip_Sent,current_Lhip),axis=None)
+#        lKnee_Sent=np.concatenate((lKnee_Sent,current_Lknee),axis=None)
+#        lAnkle_Sent=np.concatenate((lAnkle_Sent,current_Lankle),axis=None)  
+        
         sfSend.release() 
         
     print ("end move_wait")     
@@ -371,16 +413,16 @@ def ReadAngle(objPCAN,sfprocess,sfRead,sfexit):
     lKnee_Record = 0
     lAnkle_Record = 0
     
-    print ("ready for read")
+    print ("ready for read angle")
     while not sfprocess._value:
-           
+        
         sfRead.acquire()
         
         if sfexit._value:
             break
         
         read=objPCAN.Read(PCAN_PCIBUS3)
-        
+#        print("rec angle")
         while read[0] != PCAN_ERROR_QRCVEMPTY: #32 = buffere empty
             if read[1].ID == 110:
                 joinangle=read[1].DATA
@@ -389,6 +431,11 @@ def ReadAngle(objPCAN,sfprocess,sfRead,sfexit):
         anglejoin=np.array([int(joinangle[0]),int(joinangle[1]),int(joinangle[2]),int(joinangle[3]),
                             int(joinangle[4]),int(joinangle[5])]) 
         if joinangle != 0:
+            #TimeStamp
+#            recTime=datetime.now().time()
+#            print("rec")
+#            print("min: ", recTime.minute, " sec: ", recTime.second, " mls: ", recTime.microsecond)
+            
             if anglejoin[0]>128:
                 anglejoin[0]=anglejoin[0]-2**8
             if anglejoin[1]>128:
@@ -412,10 +459,48 @@ def ReadAngle(objPCAN,sfprocess,sfRead,sfexit):
         else:
             pass
         
-    print ("end read")
+    print ("end angle read")
     anglesArray = [rHip_Record, rKnee_Record, rAnkle_Record, lHip_Record, lKnee_Record, lAnkle_Record]
     
     return anglesArray
+
+#%%  READ TORQUE
+    
+def ReadTorque(objPCAN,sfprocess,sfRead,sfexit):
+    read=objPCAN.Read(PCAN_PCIBUS3)
+    joinTorque=0
+    rHip = 0
+    rKnee = 0
+    rAnkle = 0
+    lHip = 0
+    lKnee = 0
+    lAnkle = 0
+    
+    print ("ready for read torque")
+    while not sfprocess._value:
+        
+        sfRead.acquire()
+        
+        if sfexit._value:  
+            break
+        
+        read=objPCAN.Read(PCAN_PCIBUS3)
+#        print("rec torque")  
+        while read[0] != PCAN_ERROR_QRCVEMPTY: #32 = buffere empty
+            if read[1].ID == 120: #130=foot switch / 120=join Torque
+                joinTorque=read[1].DATA
+                rHip=np.concatenate((rHip,joinTorque[0]),axis=None)
+                rKnee=np.concatenate((rKnee,joinTorque[1]),axis=None)
+                rAnkle=np.concatenate((rAnkle,joinTorque[2]),axis=None)
+                lHip=np.concatenate((lHip,joinTorque[3]),axis=None)
+                lKnee=np.concatenate((lKnee,joinTorque[4]),axis=None)
+                lAnkle=np.concatenate((lAnkle,joinTorque[5]),axis=None) 
+            read=objPCAN.Read(PCAN_PCIBUS3)
+            
+    print ("end toque read")        
+    torque = [rHip,rKnee,rAnkle,lHip,lKnee,lAnkle]
+   
+    return torque
 
 
 

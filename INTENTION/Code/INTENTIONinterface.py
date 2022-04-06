@@ -136,8 +136,8 @@ def btOK():
 def gaitSection():
     global emg
     if cuadroRepeat.get() =="":
-        steps=2
-        assistance = 80
+#        steps=2
+#        assistance = 80
         cuadroRepeat.configure(bg=activebuttonCanFrame)
         assistanceBox.configure(bg=activebuttonCanFrame)
         raise NameError('"steps" EMPTY')
@@ -153,16 +153,9 @@ def gaitSection():
         joinangles = gaitData[0]
         trajectorie = gaitData[1]
         emg = gaitData[2]
+        torque = gaitData[3]
         timeStampSTART = [ctime.hour, ctime.minute, ctime.second, ctime.microsecond]
         timeStampEND = [dtime.hour, dtime.minute, dtime.second, dtime.microsecond]
-        
-#    hour = ctime.hour
-#    ctime.minute
-#    ctime.second
-#    ctime.microsecond
-    
-    cuadroRepeat.configure(bg="white")
-    assistanceBox.configure(bg="white")
     
     
     Canal1_Raw_Total = emg[0]
@@ -170,13 +163,17 @@ def gaitSection():
     Canal3_Raw_Total = emg[2]
     Canal4_Raw_Total = emg[3]
     
-    Canal1_Env_Total = emg[12]
-    Canal2_Env_Total = emg[13]
-    Canal3_Env_Total = emg[14]
-    Canal4_Env_Total = emg[15]
+    Canal1_Env_Total = emg[16]
+    Canal2_Env_Total = emg[17]
+    Canal3_Env_Total = emg[18]
+    Canal4_Env_Total = emg[19]
     
-    saveGaitTest('GAIT', emg, joinangles, trajectorie, timeStampSTART, timeStampEND)
-    saveEUROBENCH('GAIT', emg, joinangles, trajectorie, 1)
+    cuadroRepeat.configure(bg="white")
+    assistanceBox.configure(bg="white")
+    
+    
+    saveGaitTest('GAIT', emg, joinangles, trajectorie, torque, timeStampSTART, timeStampEND)
+    saveEUROBENCH('GAIT', emg, joinangles, trajectorie, 0)
     
     try:
         window=Tk()
@@ -185,7 +182,10 @@ def gaitSection():
                  Canal1_Env_Total, Canal2_Env_Total, Canal3_Env_Total, Canal4_Env_Total]
         plot_button=Button(master=window, command = muscles4Plot(emgpl,window))
         window=Tk()
-        window.title("joinangles")
+        window.title("join torque")
+        plot_button=Button(master=window, command=multiPlot(torque,window))
+        window=Tk()
+        window.title("join angles")
         plot_button=Button(master=window, command=multiPlot(joinangles,window)) 
         window=Tk()
         window.title("trajectories Sent")
@@ -203,9 +203,9 @@ def gaitSection():
 def impedanceSection(objPCAN):
     
     if cuadroRepeat.get() =="" or assistanceBox.get() =="" or stiffnessBox.get() == "":
-        gaits = 2
-        assistance = 100
-        stiffness = 20
+#        gaits = 2
+#        assistance = 100
+#        stiffness = 20
         assistanceBox.configure(bg=activebuttonCanFrame)
         stiffnessBox.configure(bg=activebuttonCanFrame)
         cuadroRepeat.configure(bg=activebuttonCanFrame)
@@ -229,6 +229,7 @@ def impedanceSection(objPCAN):
     joinangles = valor[0]
     trajectorie = valor[1]
     emg = valor[2]
+    torque = valor[3]
     timeStampSTART = [ctime.hour, ctime.minute, ctime.second, ctime.microsecond]
     timeStampEND = [dtime.hour, dtime.minute, dtime.second, dtime.microsecond]
     
@@ -238,18 +239,18 @@ def impedanceSection(objPCAN):
     Canal3_Raw_Total = emg[2]
     Canal4_Raw_Total = emg[3]
     
-    Canal1_Env_Total = emg[12]
-    Canal2_Env_Total = emg[13]
-    Canal3_Env_Total = emg[14]
-    Canal4_Env_Total = emg[15]
+    Canal1_Env_Total = emg[16]
+    Canal2_Env_Total = emg[17]
+    Canal3_Env_Total = emg[18]
+    Canal4_Env_Total = emg[19]
 
     assistanceBox.configure(bg="white")
     stiffnessBox.configure(bg="white")
     cuadroRepeat.configure(bg="white")
     
     
-    saveGaitTest('IMPEDANCE', emg, joinangles, trajectorie, timeStampSTART, timeStampEND)
-    saveEUROBENCH('IMPEDANCE', emg, joinangles, trajectorie, 1)
+    saveGaitTest('IMPEDANCE', emg, joinangles, trajectorie, torque, timeStampSTART, timeStampEND)
+    saveEUROBENCH('IMPEDANCE', emg, joinangles, trajectorie, 0)
     
     try:
         
@@ -259,13 +260,15 @@ def impedanceSection(objPCAN):
                  Canal1_Env_Total, Canal2_Env_Total, Canal3_Env_Total, Canal4_Env_Total]
         plot_button=Button(master=window, command=muscles4Plot(emgpl,window))
         window=Tk()
-        window.title("joinangles")
+        window.title("join torque")
+        plot_button=Button(master=window, command=multiPlot(torque,window))
+        window=Tk()
+        window.title("join angles")
         plot_button=Button(master=window, command=multiPlot(joinangles,window)) 
         window=Tk()
         window.title("trajectories Sent")
         plot_button=Button(master=window, command=multiPlot(trajectorie,window))
-        window.mainloop()        
- 
+        
         window.mainloop()
         
     except:
@@ -284,13 +287,13 @@ def OnsetEAST():
     
     if cuadroRepeat.get() =="" or assistanceBox.get() =="":
 #            feedbackBox.insert(END, "features empty")
-        repeat = 10 # seconds
-        assistance = 80
-        stiffness = 20
+#        repeat = 10 # seconds
+#        assistance = 80
+#        stiffness = 20
         assistanceBox.configure(bg=activebuttonCanFrame)
         stiffnessBox.configure(bg=activebuttonCanFrame)
         cuadroRepeat.configure(bg=activebuttonCanFrame)
-#        raise NameError ("repeat or assistance empty")
+        raise NameError ("repeat or assistance empty")
     else:
         repeat = int(cuadroRepeat.get())
         assistance = int(assistanceBox.get())
@@ -310,6 +313,7 @@ def OnsetEAST():
     features[7] = float(cuadroOffset3.get())
     features[8] = float(period_off3.get())
     features[9] = float(cuadroOnset4.get())
+    features[10] = float(cuadroOffset4.get())
     features[11] = float(period_off4.get())
     
     
@@ -333,7 +337,7 @@ def OnsetEAST():
 #    print(round((max_value3.get() - min_value4.get()),2))
     
     ctime=datetime.now().time()
-    rawData = Onset_Mode(objPCAN, repeat, assistance, stiffness, features, max_minFeatures)
+    rawData = Onset_Mode(objPCAN, repeat, assistance, stiffness, features, max_minFeatures, intra=0)
     dtime=datetime.now().time()
     Passive(objPCAN)
     
@@ -345,6 +349,7 @@ def OnsetEAST():
     angle = rawData[1]
     emg2 = rawData[2]
     trajectorie = rawData[3]
+    torque = rawData[4]
     timeStampSTART = [ctime.hour, ctime.minute, ctime.second, ctime.microsecond]
     timeStampEND = [dtime.hour, dtime.minute, dtime.second, dtime.microsecond]
 
@@ -356,13 +361,13 @@ def OnsetEAST():
     Canal3_Raw_Total = emg2[2]
     Canal4_Raw_Total = emg2[3]
         
-    Canal1_Env_Total = emg2[12]
-    Canal2_Env_Total = emg2[13]
-    Canal3_Env_Total = emg2[14]
-    Canal4_Env_Total = emg2[15]
+    Canal1_Env_Total = emg2[16]
+    Canal2_Env_Total = emg2[17]
+    Canal3_Env_Total = emg2[18]
+    Canal4_Env_Total = emg2[19]
     
-    saveOnsetTest(emg2, onst, angle, trajectorie, timeStampSTART, timeStampEND)
-    saveEUROBENCH('ONSET', emg2, angle, trajectorie, onst)
+    saveOnsetTest(emg2, onst, angle, trajectorie, torque, timeStampSTART, timeStampEND)
+    saveEUROBENCH('ONSET', emg2, angle, trajectorie, 1)
     
     try:
         window=Tk()
@@ -374,6 +379,9 @@ def OnsetEAST():
         window=Tk()
         window.title("trajectories Sent")
         plot_button=Button(master=window, command=multiPlot(trajectorie,window)) 
+        window=Tk()
+        window.title("join torque")
+        plot_button=Button(master=window, command=multiPlot(torque,window))
         window=Tk()
         window.title("EMG2")
         emgpl = [Canal1_Raw_Total, Canal2_Raw_Total, Canal3_Raw_Total, Canal4_Raw_Total, 
@@ -388,6 +396,125 @@ def OnsetEAST():
 
 
 
+
+
+
+
+def IntraOnsetEAST():
+#    global onst
+    global Canal13_Env_Total, Canal14_Env_Total, Canal15_Env_Total, Canal16_Env_Total
+    
+    if cuadroRepeat.get() =="" or assistanceBox.get() =="":
+#            feedbackBox.insert(END, "features empty")
+#        repeat = 10 # seconds
+#        assistance = 80
+#        stiffness = 20
+        assistanceBox.configure(bg=activebuttonCanFrame)
+        stiffnessBox.configure(bg=activebuttonCanFrame)
+        cuadroRepeat.configure(bg=activebuttonCanFrame)
+        raise NameError ("repeat or assistance empty")
+    else:
+        repeat = int(cuadroRepeat.get())
+        assistance = int(assistanceBox.get())
+        stiffness = int(stiffnessBox.get())
+        
+    NumChEMG = 4    
+    features = np.zeros(NumChEMG*3)
+    
+    #features = [th0, thff0, pff0, th1, thff1, pff1]
+    features[0] = float(cuadroOnset.get())
+    features[1] = float(cuadroOffset.get())
+    features[2] = float(period_off.get())
+    features[3] = float(cuadroOnset2.get())
+    features[4] = float(cuadroOffset2.get())
+    features[5] = float(period_off2.get())
+    features[6] = float(cuadroOnset3.get())
+    features[7] = float(cuadroOffset3.get())
+    features[8] = float(period_off3.get())
+    features[9] = float(cuadroOnset4.get())
+    features[10] = float(cuadroOffset4.get())
+    features[11] = float(period_off4.get())
+    
+    
+    max_minFeatures = np.zeros(NumChEMG*2)
+#    "%.3f" % 
+#    max_minFeatures[0] = float(round(max(Canal1_Env_Total),3))
+    max_minFeatures[0] = float(max_value.get())
+    max_minFeatures[2] = float(max_value2.get())
+    max_minFeatures[4] = float(max_value3.get())
+    max_minFeatures[6] = float(max_value4.get())
+    
+#    max_minFeatures[1] = float(round(min(Canal1_Env_Total),3))
+    max_minFeatures[1] = float(min_value.get())
+    max_minFeatures[3] = float(min_value2.get())
+    max_minFeatures[5] = float(min_value3.get())
+    max_minFeatures[7] = float(min_value4.get())
+    
+#    print(round((max_value.get() - min_value.get()),2))
+#    print(round((max_value2.get() - min_value2.get()),2))
+#    print(round((max_value3.get() - min_value3.get()),2))
+#    print(round((max_value3.get() - min_value4.get()),2))
+    
+    ctime=datetime.now().time()
+    rawData = Onset_Mode(objPCAN, repeat, assistance, stiffness, features, max_minFeatures, intra=1)
+    dtime=datetime.now().time()
+    Passive(objPCAN)
+    
+    
+    assistanceBox.configure(bg="white")
+    cuadroRepeat.configure(bg="white")
+#    rawData = [Canal1_Total, Canal2_Total, Onset, 0]
+    onst = rawData[0]
+    angle = rawData[1]
+    emg2 = rawData[2]
+    trajectorie = rawData[3]
+    torque = rawData[4]
+    timeStampSTART = [ctime.hour, ctime.minute, ctime.second, ctime.microsecond]
+    timeStampEND = [dtime.hour, dtime.minute, dtime.second, dtime.microsecond]
+
+    
+    feedbackBox.insert(END, "EXO Stoped")
+    
+    Canal12_Raw_Total = emg2[12]
+    Canal13_Raw_Total = emg2[13]
+    Canal14_Raw_Total = emg2[14]
+    Canal15_Raw_Total = emg2[15]
+        
+    Canal12_Env_Total = emg2[20]
+    Canal13_Env_Total = emg2[21]
+    Canal14_Env_Total = emg2[22]
+    Canal15_Env_Total = emg2[23]
+    
+    saveIntraOnsetTest(emg2, onst, angle, trajectorie, torque, timeStampSTART, timeStampEND)
+    saveEUROBENCH('INTRAONSET', emg2, angle, trajectorie, 1)
+    
+    try:
+        window=Tk()
+        window.title("onset")
+        plot_button=Button(master=window, command=plot_sample(onst,window))
+        window=Tk()
+        window.title("Angles")
+        plot_button=Button(master=window, command=multiPlot(angle,window)) 
+        window=Tk()
+        window.title("trajectories Sent")
+        plot_button=Button(master=window, command=multiPlot(trajectorie,window)) 
+        window=Tk()
+        window.title("join torque")
+        plot_button=Button(master=window, command=multiPlot(torque,window))
+        window=Tk()
+        window.title("EMG2")
+        emgpl = [Canal12_Raw_Total, Canal13_Raw_Total, Canal14_Raw_Total, Canal15_Raw_Total, 
+                 Canal12_Env_Total, Canal13_Env_Total, Canal14_Env_Total, Canal15_Env_Total]
+        plot_button=Button(master=window, command=muscles4Plot(emgpl,window))
+        
+        window.mainloop()   
+    except:
+        interactionMSG.set("ERROR: PLOT")  
+        feedbackBox.insert(END, "ERROR: PLOT")
+        raise Exception("PLOT")
+        
+        
+        
 
 
 def Proportionald():
@@ -524,11 +651,13 @@ def btRUN(event):
         MD1=MD.get()
         OD1=OD.get()
         EP1=EP.get()
-        if (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0):
+        EI1=EI.get()
+        
+        if (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0) & (EI1 == 0):
             interactionMSG.set("select an option") 
             feedbackBox.insert(END, "select an option")
             
-        elif (MS1 == 1) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0):
+        elif (MS1 == 1) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0) & (EI1 == 0):
             
             interactionMSG.set("OWN GAIT") 
             feedbackBox.insert(END, "OWN GAIT")
@@ -537,7 +666,7 @@ def btRUN(event):
             feedbackBox.insert(END, "OWN GAIT OFF")
             
             
-        elif (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0):
+        elif (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0) & (EI1 == 0):
             
             interactionMSG.set("IMPEDANCE") 
             feedbackBox.insert(END, "IMPEDANCE")
@@ -547,20 +676,28 @@ def btRUN(event):
             feedbackBox.insert(END, "IMPEDANCE OFF")
 
                  
-        elif (MS1 == 0) & (MD1 == 0) & (OD1 == 1) & (EP1 == 0):
+        elif (MS1 == 0) & (MD1 == 0) & (OD1 == 1) & (EP1 == 0) & (EI1 == 0):
             interactionMSG.set("Onset EMG") 
             feedbackBox.insert(END, "Onset EMG")
             OnsetEAST()
             interactionMSG.set("Onset Off") 
             feedbackBox.insert(END, "Onset Off")
 
-        elif (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 1):
+        elif (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 1) & (EI1 == 0):
                 
             interactionMSG.set("Proporcional EMG") 
             feedbackBox.insert(END, "Proporcional EMG")
             Proportionald()
             interactionMSG.set("Proporcional Off") 
             feedbackBox.insert(END, "Proporcional Off")
+            
+        elif (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0) & (EI1 == 1):
+                
+            interactionMSG.set("Onset intra EMG") 
+            feedbackBox.insert(END, "Onset intra EMG")
+            IntraOnsetEAST()
+            interactionMSG.set("Intra Onset Off") 
+            feedbackBox.insert(END, "intra Onset Off")
             
         else:
             interactionMSG.set("select just one option") 
@@ -739,7 +876,7 @@ def ExoEAST():
             
         print("Exo-EMG Recording") 
         ctime = datetime.now().time()
-        Data, angleArray, trajectories = EAST_Exorecord(repeat, objPCAN, assistance, stiffness)
+        Data, angleArray, trajectories, torque = EAST_Exorecord(repeat, objPCAN, assistance, stiffness)
         dtime = datetime.now().time()
     #        cuadroRepeat.configure(bg="white")
         Passive(objPCAN)
@@ -752,7 +889,7 @@ def ExoEAST():
         return Data, angleArray, trajectories, ctime, dtime
 #        raise
         
-    return Data, angleArray, trajectories, ctime, dtime
+    return Data, angleArray, trajectories, torque, ctime, dtime
             
 
 
@@ -761,6 +898,7 @@ def btEAST(event):
     print("BEGINNING") 
     global Canal1_Env_Total, Canal2_Env_Total, Canal3_Env_Total, Canal4_Env_Total
     global Canal1_Raw_Total, Canal2_Raw_Total, Canal3_Raw_Total, Canal4_Raw_Total
+    global Canal_Array_Totaln
     
     try: 
         
@@ -770,21 +908,42 @@ def btEAST(event):
         MD1=MD.get()
         OD1=OD.get()
         EP1=EP.get()
+        EI1=EI.get()
         
+        intra = 0
+        electrode = 'SURFACE'
         
-        if (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0):
+        if (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0) & (EI1 == 0):
             try:
                 objPCAN
                 pass
             except:
                 raise NameError ("ERROR: CAN conection")
             exo = 1
-            Data, angleArray, trajectories, ctime, dtime = ExoEAST()
+            Data, angleArray, trajectories, torque, ctime, dtime = ExoEAST()
             
+        elif (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0) & (EI1 == 1):
+            try:
+                objPCAN
+                pass
+            except:
+                raise NameError ("ERROR: CAN conection")
+            exo = 1
+            intra = 1
+            electrode = 'INTRA'
+            Data, angleArray, trajectories, torque, ctime, dtime = ExoEAST()
+            
+        elif (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0) & (EI1 == 1):
+            exo = 0
+            intra = 1
+            electrode = 'INTRA'
+            Data, ctime, dtime = EASTRecord()
         else:
 #            try:
             exo = 0
             Data, ctime, dtime = EASTRecord()
+            
+            
 #            except KeyboardInterrupt:
 #                print("ERROR1 EAST")
 #                raise NameError ("ERROR: CAN conection")
@@ -801,18 +960,32 @@ def btEAST(event):
     
         interactionMSG.set("Serial Port closed")
         feedbackBox.insert(END, "Serial Port closed")
-        Canal1_Raw_Total = Data[0]
-        Canal2_Raw_Total = Data[1]
-        Canal3_Raw_Total = Data[2]
-        Canal4_Raw_Total = Data[3]
+        if intra:
+            Canal1_Raw_Total = Data[12]
+            Canal2_Raw_Total = Data[13]
+            Canal3_Raw_Total = Data[14]
+            Canal4_Raw_Total = Data[15]
+            
+            Canal1_Env_Total = Data[20]
+            Canal2_Env_Total = Data[21]
+            Canal3_Env_Total = Data[22]
+            Canal4_Env_Total = Data[23]
+            
+        else:
+            Canal1_Raw_Total = Data[0]
+            Canal2_Raw_Total = Data[1]
+            Canal3_Raw_Total = Data[2]
+            Canal4_Raw_Total = Data[3]
+            
+            Canal1_Env_Total = Data[16]
+            Canal2_Env_Total = Data[17]
+            Canal3_Env_Total = Data[18]
+            Canal4_Env_Total = Data[19]
+
+            
         
-        Canal1_Env_Total = Data[12]
-        Canal2_Env_Total = Data[13]
-        Canal3_Env_Total = Data[14]
-        Canal4_Env_Total = Data[15]
         
-        
-        time = Data[18]
+        time = Data[24]
         
         sg_delete=300
         
@@ -826,40 +999,42 @@ def btEAST(event):
         Canal3_Env_Total = Canal3_Env_Total[sg_delete:-1]
         Canal4_Env_Total = Canal4_Env_Total[sg_delete:-1]
         
-        th1 = 1
-        th2 = 1
-        th3 = 1
-        th4 = 1
+        Canal_Array_Totaln=[Canal1_Raw_Total, Canal2_Raw_Total, Canal3_Raw_Total, Canal4_Raw_Total]
+        
+        th1 = 0.6
+        th2 = 0.6
+        th3 = 0.6
+        th4 = 0.6
 
-        c1normalized, on1 = thValues(Canal1_Env_Total, th1)
-        c2normalized, on2 = thValues(Canal2_Env_Total, th2)
-        c3normalized, on3 = thValues(Canal3_Env_Total, th3)
-        c4normalized, on4 = thValues(Canal4_Env_Total, th4)
+        c1normalized, on1 = thValues(Canal_Array_Totaln[0], th1)
+        c2normalized, on2 = thValues(Canal_Array_Totaln[1], th2)
+        c3normalized, on3 = thValues(Canal_Array_Totaln[2], th3)
+        c4normalized, on4 = thValues(Canal_Array_Totaln[3], th4)
         
         
-        max_value.set("%.3f" % max(Canal1_Env_Total))
-        min_value.set("%.3f" % min(Canal1_Env_Total))
+        max_value.set("%.3f" % max(Canal_Array_Totaln[0]))
+        min_value.set("%.3f" % min(Canal_Array_Totaln[0]))
         onset.set("%.3f" % on1)
         offset.set("%.3f" % on1)
         period_off.set(0.1)
         thvalue.set("%.2f" % th1)
         
-        max_value2.set("%.3f" % max(Canal2_Env_Total))
-        min_value2.set("%.3f" % min(Canal2_Env_Total))
+        max_value2.set("%.3f" % max(Canal_Array_Totaln[1]))
+        min_value2.set("%.3f" % min(Canal_Array_Totaln[1]))
         onset2.set("%.3f" % on2)
         offset2.set("%.3f" % on2)
         period_off2.set(0.1)
         thvalue2.set("%.2f" % th2)
         
-        max_value3.set("%.3f" % max(Canal3_Env_Total))
-        min_value3.set("%.3f" % min(Canal3_Env_Total))
+        max_value3.set("%.3f" % max(Canal_Array_Totaln[2]))
+        min_value3.set("%.3f" % min(Canal_Array_Totaln[2]))
         onset3.set("%.3f" % on3)
         offset3.set("%.3f" % on3)
         period_off3.set(0.1)
         thvalue3.set("%.2f" % th3)
         
-        max_value4.set("%.3f" % max(Canal4_Env_Total))
-        min_value4.set("%.3f" % min(Canal4_Env_Total))
+        max_value4.set("%.3f" % max(Canal_Array_Totaln[3]))
+        min_value4.set("%.3f" % min(Canal_Array_Totaln[3]))
         onset4.set("%.3f" % on4)
         offset4.set("%.3f" % on4)
         period_off4.set(0.1)
@@ -882,10 +1057,6 @@ def btEAST(event):
         
         try:
             
-            Canal1_Raw_Total = Data[0]
-            Canal2_Raw_Total = Data[1]
-            Canal3_Raw_Total = Data[2]
-            Canal4_Raw_Total = Data[3] 
             Canal5_Raw_Total = Data[4]
             Canal6_Raw_Total = Data[5]
             Canal7_Raw_Total = Data[6]
@@ -898,14 +1069,19 @@ def btEAST(event):
             
             rawData = [Canal1_Raw_Total, Canal2_Raw_Total, Canal3_Raw_Total, Canal4_Raw_Total]
             envData = [Canal1_Env_Total, Canal2_Env_Total, Canal3_Env_Total, Canal4_Env_Total]
+            
+#            intra_rawData = [Canal13_Raw_Total, Canal14_Raw_Total, Canal15_Raw_Total, Canal16_Raw_Total]
+            
             normalizesCh = [c1normalized, c2normalized, c3normalized, c4normalized]
             
-            emgpl1 = [Canal1_Raw_Total, Canal2_Raw_Total, Canal9_Raw_Total, Canal10_Raw_Total, Canal11_Raw_Total, Canal12_Raw_Total]
-            emgpl2 = [Canal3_Raw_Total, Canal4_Raw_Total, Canal5_Raw_Total, Canal6_Raw_Total, Canal7_Raw_Total, Canal8_Raw_Total]
+            emgpl1 = [Canal1_Raw_Total, Canal2_Raw_Total, Canal9_Raw_Total, 
+                      Canal10_Raw_Total, Canal11_Raw_Total, Canal12_Raw_Total]
+            emgpl2 = [Canal3_Raw_Total, Canal4_Raw_Total, Canal5_Raw_Total, 
+                      Canal6_Raw_Total, Canal7_Raw_Total, Canal8_Raw_Total]
     
             
             if exo:
-                saveDataExo(rawData, envData, angleArray, trajectories, time, timeStampSTART, timeStampEND)
+                saveDataExo(rawData, envData, angleArray, trajectories, torque, time, timeStampSTART, timeStampEND, electrode)
                 
                 window=Tk()
                 window.title("Angles")
@@ -916,7 +1092,7 @@ def btEAST(event):
                 plot_button=Button(master=window, command = multiPlot(trajectories,window))
                 
             else:  
-                saveTrainData(rawData, envData, normalizesCh, time, timeStampSTART, timeStampEND)
+                saveTrainData(rawData, envData, normalizesCh, time, timeStampSTART, timeStampEND, electrode)
                 
                 
 #            window=Tk()
@@ -924,6 +1100,12 @@ def btEAST(event):
 #            emgpl = [Canal1_Raw_Total, Canal2_Raw_Total, Canal3_Raw_Total, Canal4_Raw_Total, 
 #                     Canal1_Env_Total, Canal2_Env_Total, Canal3_Env_Total, Canal4_Env_Total]
 #            plot_button=Button(master=window, command = muscles4Plot(emgpl,window))
+                
+               
+            window=Tk()
+            window.title("EMG Threshold")
+            plot_button=Button(master=window, command = normalizedPlot(rawData,window))    
+                
             window=Tk()
             window.title("EMG Recorded R")
             plot_button=Button(master=window, command = EUROPlot(emgpl1,window))
@@ -934,9 +1116,9 @@ def btEAST(event):
             window=Tk()
             window.title("envelope")
             plot_button=Button(master=window, command = normalizedPlot(envData,window))
-            window=Tk()
-            window.title("normalize")
-            plot_button=Button(master=window, command = normalizedPlot(normalizesCh,window))
+#            window=Tk()
+#            window.title("normalize")
+#            plot_button=Button(master=window, command = normalizedPlot(normalizesCh,window))
             
             window.mainloop()   
         except:
@@ -963,13 +1145,20 @@ def btEAST(event):
 
 def thValues(Data, th):
     normalized = (Data-min(Data))/round((max(Data)-min(Data)),2)
+#    std=np.std(normalized)
+    mean=np.mean(Data)
     std=np.std(normalized)
+#    print("mean: ",mean," std: ",std*th)
+    
+#    on=mean+(std*th)
 
-#    thArray = np.where(normalized > std*th)
-#    position = Data[thArray]
+    thArray = np.where(normalized > th)
+    position = Data[thArray]
+    on = position.flat[0]
     
 #    return normalized, position.flat[0]
-    return normalized, std*th
+#    return normalized, std*th
+    return normalized, on
         
     
 def plot_sample(valor,window): 
@@ -1085,19 +1274,6 @@ def EMGPlot(valor,window):
     
     
 def EUROPlot(valor,window):
-
-#    Canal1_Raw_Total = emg[0]
-#    Canal2_Raw_Total = emg[1]
-#    Canal3_Raw_Total = emg[2]
-#    Canal4_Raw_Total = emg[3] 
-#    Canal5_Raw_Total = emg[4]
-#    Canal6_Raw_Total = emg[5]
-#    Canal7_Raw_Total = emg[6]
-#    Canal8_Raw_Total = emg[7]
-#    Canal9_Raw_Total = emg[8]
-#    Canal10_Raw_Total = emg[9]
-#    Canal11_Raw_Total = emg[10]
-#    Canal12_Raw_Total = emg[11]
     
     fig=Figure(figsize=(14,7),dpi=110)
     plot1=fig.add_subplot(321)
@@ -1120,7 +1296,10 @@ def EUROPlot(valor,window):
     toolbar.update()
     canvas.get_tk_widget().pack() 
 
-def saveTrainData(rawData, envData, normalizesCh, time, timeStampSTART, timeStampEND):
+
+#%%  SAVE
+
+def saveTrainData(rawData, envData, normalizesCh, time, timeStampSTART, timeStampEND, electrode):
     global subject, date, trial
     
     Canal1_Raw_Total = rawData[0]
@@ -1158,11 +1337,12 @@ def saveTrainData(rawData, envData, normalizesCh, time, timeStampSTART, timeStam
     df10_o = pd.DataFrame(c3normalized,columns=['c3_Norm'])
     df11_o = pd.DataFrame(c4normalized,columns=['c4_Norm'])
     
-    df_o = pd.concat([df00,dfE,dft,df_o,df1_o,df2_o,df3_o,df4_o,df5_o,df6_o,df7_o,df8_o,df9_o,df10_o,df11_o], axis = 1)
+    df_o = pd.concat([df00,dfE,dft,df_o,df1_o,df2_o,df3_o,df4_o,df5_o,df6_o,
+                      df7_o,df8_o,df9_o,df10_o,df11_o], axis = 1)
     
-    df_o.to_csv(date + '_' + 'EMG_Subject' + '_' + subject + '_' + trial + '.csv',sep=',')
+    df_o.to_csv(date + '_' + 'Try_EMG_' + electrode + '_' + 'Subject_' + subject + '_' + trial + '.csv',sep=',')
     
-def saveDataExo(rawData, envData, angleArray, trajectories, time, timeStampSTART, timeStampEND):
+def saveDataExo(rawData, envData, angleArray, trajectories, torque, time, timeStampSTART, timeStampEND, electrode):
     global subject, date, trial, repeat
     
     Canal1_Raw_Total = rawData[0]
@@ -1188,6 +1368,13 @@ def saveDataExo(rawData, envData, angleArray, trajectories, time, timeStampSTART
     lHip_Traj = trajectories[3]
     lKnee_Traj = trajectories[4]
     lAnkle_Traj = trajectories[5]
+    
+    rHip_Torque = torque[0] 
+    rKnee_Torque = torque[1]
+    rAnkle_Torque = torque[2] 
+    lHip_Torque = torque[3] 
+    lKnee_Torque = torque[4] 
+    lAnkle_Torque = torque[5]
     
     df00 = pd.DataFrame(timeStampSTART,columns=['Time_Stamp_Start'])
     dfE = pd.DataFrame(timeStampEND,columns=['Time_Stamp_END'])
@@ -1217,14 +1404,22 @@ def saveDataExo(rawData, envData, angleArray, trajectories, time, timeStampSTART
     df18_o = pd.DataFrame(lKnee_Traj,columns=['lKnee_Traj'])
     df19_o = pd.DataFrame(lAnkle_Traj,columns=['lAnkle_Traj'])
     
-    df_o = pd.concat([df00,dfE,df_o,df1_o,df2_o,df3_o,df4_o,df5_o,df6_o,df7_o, df8_o, df9_o, 
-                      df10_o, df11_o, df12_o, df13_o, df14_o, df15_o, df16_o, df17_o, df18_o, df19_o], axis = 1)
+    df20_o = pd.DataFrame(rHip_Torque,columns=['rHip_Torque'])
+    df21_o = pd.DataFrame(rKnee_Torque,columns=['rKnee_Torque'])
+    df22_o = pd.DataFrame(rAnkle_Torque,columns=['rAnkle_Torque'])
+    df23_o = pd.DataFrame(lHip_Torque,columns=['lHip_Torque'])  
+    df24_o = pd.DataFrame(lKnee_Torque,columns=['lKnee_Torque'])
+    df25_o = pd.DataFrame(lAnkle_Torque,columns=['lAnkle_Torque'])
+    
+    df_o = pd.concat([df00,dfE,df_o,df1_o,df2_o,df3_o,df4_o,df5_o,df6_o,df7_o, 
+                      df8_o,df9_o,df10_o,df11_o,df12_o,df13_o,df14_o,df15_o,df16_o,
+                      df17_o,df18_o,df19_o,df20_o,df21_o,df22_o,df23_o,df24_o,df25_o], axis = 1)
 #    date='211021'
 #    subject='Marvin'
 #    trial='01'
-    df_o.to_csv(date + '_' + 'Train_Subject' + '_' + subject + '_' + trial + '.csv',sep=',')
+    df_o.to_csv(date + '_' + 'Try_Exo_' + electrode + '_' + 'Subject_' + subject + '_' + trial + '.csv',sep=',')
 
-def saveOnsetTest(emg, onst, angle, trajectorie, timeStampSTART, timeStampEND):
+def saveOnsetTest(emg, onst, angle, trajectorie, torque, timeStampSTART, timeStampEND):
     global subject, date, trial, repeat
 
     Canal1_Raw_Total = emg[0]
@@ -1232,12 +1427,12 @@ def saveOnsetTest(emg, onst, angle, trajectorie, timeStampSTART, timeStampEND):
     Canal3_Raw_Total = emg[2]
     Canal4_Raw_Total = emg[3] 
     
-    Canal1_Env_Total = emg[12]
-    Canal2_Env_Total = emg[13]
-    Canal3_Env_Total = emg[14]
-    Canal4_Env_Total = emg[15]
+    Canal1_Env_Total = emg[16]
+    Canal2_Env_Total = emg[17]
+    Canal3_Env_Total = emg[18]
+    Canal4_Env_Total = emg[19]
     
-    tiempo = emg[18]
+    tiempo = emg[24]
     
     rHip_Record = angle[0] 
     rKnee_Record = angle[1]
@@ -1253,6 +1448,13 @@ def saveOnsetTest(emg, onst, angle, trajectorie, timeStampSTART, timeStampEND):
     lHip_Sent = trajectorie[3] 
     lKnee_Sent = trajectorie[4] 
     lAnkle_Sent = trajectorie[5]
+    
+    rHip_Torque = torque[0] 
+    rKnee_Torque = torque[1]
+    rAnkle_Torque = torque[2] 
+    lHip_Torque = torque[3] 
+    lKnee_Torque = torque[4] 
+    lAnkle_Torque = torque[5]
     
     
     df00 = pd.DataFrame(timeStampSTART,columns=['Time_Stamp_Start'])
@@ -1285,16 +1487,113 @@ def saveOnsetTest(emg, onst, angle, trajectorie, timeStampSTART, timeStampEND):
     df19 = pd.DataFrame(lKnee_Sent,columns=['lKnee_Sent'])
     df20 = pd.DataFrame(lAnkle_Sent,columns=['lAnkle_Sent'])
     
+    df21 = pd.DataFrame(rHip_Torque,columns=['rHip_Torque'])
+    df22 = pd.DataFrame(rKnee_Torque,columns=['rKnee_Torque'])
+    df23 = pd.DataFrame(rAnkle_Torque,columns=['rAnkle_Torque'])
+    df24 = pd.DataFrame(lHip_Torque,columns=['lHip_Torque'])  
+    df25 = pd.DataFrame(lKnee_Torque,columns=['lKnee_Torque'])
+    df26 = pd.DataFrame(lAnkle_Torque,columns=['lAnkle_Torque'])
+    
 #    df21 = pd.DataFrame([2000],columns=['FS_EMG'])
 #    df8=pd.DataFrame(comp_time,columns=['Computational time'])
     
     df = pd.concat([df00,dfE,dft,df0,df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11,df12,
-                    df13,df14,df15,df16,df17,df18,df19,df20], axis = 1)
+                    df13,df14,df15,df16,df17,df18,df19,df20,df21,df22,df23,df24,
+                    df25,df26], axis = 1)
 
     df.to_csv(date + '_' + 'ONSET_Subject' + '_' + subject + '_' + trial + '.csv',sep=',')
+
+
+
+def saveIntraOnsetTest(emg, onst, angle, trajectorie, torque, timeStampSTART, timeStampEND):
+    global subject, date, trial, repeat
+
+    Canal12_Raw_Total = emg[12]
+    Canal13_Raw_Total = emg[13]
+    Canal14_Raw_Total = emg[14]
+    Canal15_Raw_Total = emg[15]
+        
+    Canal12_Env_Total = emg[20]
+    Canal13_Env_Total = emg[21]
+    Canal14_Env_Total = emg[22]
+    Canal15_Env_Total = emg[23]
     
     
-def saveGaitTest(controlador, emg, angle, trajectorie, timeStampSTART, timeStampEND):
+    tiempo = emg[24]
+    
+    rHip_Record = angle[0] 
+    rKnee_Record = angle[1]
+    rAnkle_Record = angle[2] 
+    lHip_Record = angle[3] 
+    lKnee_Record = angle[4] 
+    lAnkle_Record = angle[5]
+    
+
+    rHip_Sent = trajectorie[0] 
+    rKnee_Sent = trajectorie[1]
+    rAnkle_Sent = trajectorie[2] 
+    lHip_Sent = trajectorie[3] 
+    lKnee_Sent = trajectorie[4] 
+    lAnkle_Sent = trajectorie[5]
+    
+    rHip_Torque = torque[0] 
+    rKnee_Torque = torque[1]
+    rAnkle_Torque = torque[2] 
+    lHip_Torque = torque[3] 
+    lKnee_Torque = torque[4] 
+    lAnkle_Torque = torque[5]
+    
+    
+    df00 = pd.DataFrame(timeStampSTART,columns=['Time_Stamp_Start'])
+    dfE = pd.DataFrame(timeStampEND,columns=['Time_Stamp_END'])
+    dft = pd.DataFrame(tiempo,columns=['Tiempo'])
+    
+    df0 = pd.DataFrame(Canal12_Raw_Total,columns=['Canal12_Raw'])
+    df1 = pd.DataFrame(Canal13_Raw_Total,columns=['Canal13_Raw'])
+    df2 = pd.DataFrame(Canal14_Raw_Total,columns=['Canal14_Raw'])
+    df3 = pd.DataFrame(Canal15_Raw_Total,columns=['Canal15_Raw'])
+    
+    df4 = pd.DataFrame(Canal12_Env_Total,columns=['Canal12_Env'])
+    df5 = pd.DataFrame(Canal13_Env_Total,columns=['Canal13_Env'])
+    df6 = pd.DataFrame(Canal14_Env_Total,columns=['Canal14_Env'])
+    df7 = pd.DataFrame(Canal15_Env_Total,columns=['Canal15_Env'])
+    
+    df8 = pd.DataFrame(onst,columns=['ONSET'])
+    
+    df9 = pd.DataFrame(rHip_Record,columns=['rHip_Record'])
+    df10 = pd.DataFrame(rKnee_Record,columns=['rKnee_Record'])
+    df11 = pd.DataFrame(rAnkle_Record,columns=['rAnkle_Record'])
+    df12 = pd.DataFrame(lHip_Record,columns=['lHip_Record'])  
+    df13 = pd.DataFrame(lKnee_Record,columns=['lKnee_Record'])
+    df14 = pd.DataFrame(lAnkle_Record,columns=['lAnkle_Record'])
+    
+    df15 = pd.DataFrame(rHip_Sent,columns=['rHip_Sent'])
+    df16 = pd.DataFrame(rKnee_Sent,columns=['rKnee_Sent'])
+    df17 = pd.DataFrame(rAnkle_Sent,columns=['rAnkle_Sent'])
+    df18 = pd.DataFrame(lHip_Sent,columns=['lHip_Sent'])  
+    df19 = pd.DataFrame(lKnee_Sent,columns=['lKnee_Sent'])
+    df20 = pd.DataFrame(lAnkle_Sent,columns=['lAnkle_Sent'])
+    
+    df21 = pd.DataFrame(rHip_Torque,columns=['rHip_Torque'])
+    df22 = pd.DataFrame(rKnee_Torque,columns=['rKnee_Torque'])
+    df23 = pd.DataFrame(rAnkle_Torque,columns=['rAnkle_Torque'])
+    df24 = pd.DataFrame(lHip_Torque,columns=['lHip_Torque'])  
+    df25 = pd.DataFrame(lKnee_Torque,columns=['lKnee_Torque'])
+    df26 = pd.DataFrame(lAnkle_Torque,columns=['lAnkle_Torque'])
+    
+#    df21 = pd.DataFrame([2000],columns=['FS_EMG'])
+#    df8=pd.DataFrame(comp_time,columns=['Computational time'])
+    
+    df = pd.concat([df00,dfE,dft,df0,df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11,df12,
+                    df13,df14,df15,df16,df17,df18,df19,df20,df21,df22,df23,df24,
+                    df25,df26], axis = 1)
+
+    df.to_csv(date + '_' + 'INTRA_ONSET_Subject' + '_' + subject + '_' + trial + '.csv',sep=',')
+
+
+    
+    
+def saveGaitTest(controlador, emg, angle, trajectorie, torque, timeStampSTART, timeStampEND):
     global subject, date, trial, repeat
 
     Canal1_Raw_Total = emg[0]
@@ -1302,12 +1601,12 @@ def saveGaitTest(controlador, emg, angle, trajectorie, timeStampSTART, timeStamp
     Canal3_Raw_Total = emg[2]
     Canal4_Raw_Total = emg[3] 
     
-    Canal1_Env_Total = emg[12]
-    Canal2_Env_Total = emg[13]
-    Canal3_Env_Total = emg[14]
-    Canal4_Env_Total = emg[15]
+    Canal1_Env_Total = emg[16]
+    Canal2_Env_Total = emg[17]
+    Canal3_Env_Total = emg[18]
+    Canal4_Env_Total = emg[19]
     
-    tiempo = emg[18]
+    tiempo = emg[24]
     
     rHip_Record = angle[0] 
     rKnee_Record = angle[1]
@@ -1323,7 +1622,12 @@ def saveGaitTest(controlador, emg, angle, trajectorie, timeStampSTART, timeStamp
     lKnee_Sent = trajectorie[4] 
     lAnkle_Sent = trajectorie[5]
     
-    
+    rHip_Torque = torque[0] 
+    rKnee_Torque = torque[1]
+    rAnkle_Torque = torque[2] 
+    lHip_Torque = torque[3] 
+    lKnee_Torque = torque[4] 
+    lAnkle_Torque = torque[5]
         
         
     df00 = pd.DataFrame(timeStampSTART,columns=['Time_Stamp_Start'])
@@ -1354,9 +1658,17 @@ def saveGaitTest(controlador, emg, angle, trajectorie, timeStampSTART, timeStamp
     df19 = pd.DataFrame(lKnee_Sent,columns=['lKnee_Sent'])
     df20 = pd.DataFrame(lAnkle_Sent,columns=['lAnkle_Sent'])
     
+    df21 = pd.DataFrame(rHip_Torque,columns=['rHip_Torque'])
+    df22 = pd.DataFrame(rKnee_Torque,columns=['rKnee_Torque'])
+    df23 = pd.DataFrame(rAnkle_Torque,columns=['rAnkle_Torque'])
+    df24 = pd.DataFrame(lHip_Torque,columns=['lHip_Torque'])  
+    df25 = pd.DataFrame(lKnee_Torque,columns=['lKnee_Torque'])
+    df26 = pd.DataFrame(lAnkle_Torque,columns=['lAnkle_Torque'])
+    
     
     df = pd.concat([df00,dfE,dft,df0,df1,df2,df3,df4,df5,df6,df7,df9,df10,df11,df12,
-                    df13,df14,df15,df16,df17,df18,df19,df20], axis = 1)
+                    df13,df14,df15,df16,df17,df18,df19,df20,df21,df22,df23,df24,
+                    df25,df26], axis = 1)
 
     df.to_csv(date + '_' + controlador + '_' + 'Subject' + '_' + subject + '_' + trial + '.csv',sep=',')    
 
@@ -1365,36 +1677,36 @@ def saveGaitTest(controlador, emg, angle, trajectorie, timeStampSTART, timeStamp
 def saveEUROBENCH(controlador, emg, angle, trajectorie, onst):
     global subject, date, trial, repeat
 
-    Canal1_Raw_Total = emg[0]#soleo R
-    Canal2_Raw_Total = emg[1]# RF R
-    Canal3_Raw_Total = emg[2]# soleo L
-    Canal4_Raw_Total = emg[3]# RF L  
-    Canal5_Raw_Total = emg[4]
-    Canal6_Raw_Total = emg[5]
-    Canal7_Raw_Total = emg[6]
-    Canal8_Raw_Total = emg[7]
-    Canal9_Raw_Total = emg[8]
-    Canal10_Raw_Total = emg[9]
-    Canal11_Raw_Total = emg[10]
-    Canal12_Raw_Total = emg[11]
+    Canal1_Raw_Total = emg[0] # Sol R
+    Canal2_Raw_Total = emg[1] # RF R
+    Canal3_Raw_Total = emg[2] # Sol L
+    Canal4_Raw_Total = emg[3] # RF L  
+    Canal5_Raw_Total = emg[4] # BF L
+    Canal6_Raw_Total = emg[5] # GM L
+    Canal7_Raw_Total = emg[6] # TA L
+    Canal8_Raw_Total = emg[7] # VL L
+    Canal9_Raw_Total = emg[8] # BF R
+    Canal10_Raw_Total = emg[9] # GM R
+    Canal11_Raw_Total = emg[10]# TA R
+    Canal12_Raw_Total = emg[11]# VL R
     
-    tiempo = emg[18]
+    tiempo = emg[24]
     
-    dft = pd.DataFrame(tiempo,columns=['Tiempo'])
+    dft = pd.DataFrame(tiempo,columns=['time'])
     df0 = pd.DataFrame(Canal5_Raw_Total,columns=['BiFe_left'])
     df1 = pd.DataFrame(Canal6_Raw_Total,columns=['GaMe_left'])
-    df2 = pd.DataFrame(Canal1_Raw_Total,columns=['Sol_rigth'])
-    df3 = pd.DataFrame(Canal2_Raw_Total,columns=['ReFe_rigth'])
+    df2 = pd.DataFrame(Canal4_Raw_Total,columns=['ReFe_left'])
+    df3 = pd.DataFrame(Canal3_Raw_Total,columns=['Sol_left'])
     df4 = pd.DataFrame(Canal7_Raw_Total,columns=['TiAn_left'])
     df5 = pd.DataFrame(Canal8_Raw_Total,columns=['VaLa_left'])
+    
     df6 = pd.DataFrame(Canal9_Raw_Total,columns=['BiFe_rigth'])   
     df7 = pd.DataFrame(Canal10_Raw_Total,columns=['GaMe_rigth'])
-    df8 = pd.DataFrame(Canal3_Raw_Total,columns=['Sol_left'])
-    df9 = pd.DataFrame(Canal4_Raw_Total,columns=['ReFe_left'])
+    df8 = pd.DataFrame(Canal2_Raw_Total,columns=['ReFe_rigth'])
+    df9 = pd.DataFrame(Canal1_Raw_Total,columns=['Sol_rigth'])
     df10 = pd.DataFrame(Canal11_Raw_Total,columns=['TiAn_rigth'])
     df11 = pd.DataFrame(Canal12_Raw_Total,columns=['VaLa_rigth'])
     
-
     
     
     df = pd.concat([dft,df0,df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11], axis = 1)
@@ -1512,6 +1824,7 @@ def btAngles():
             raise TypeError("ERROR: CAN conection")
             
         joinangle = readAngle(objPCAN,seconds)
+#        joinangle = JoinTorque(objPCAN,seconds)
 #        pangleThread = Thread(target = readAngle, args = (objPCAN, seconds)) 
 #        pangleThread.start()
 #        pangleThread.join()
@@ -1529,9 +1842,9 @@ def btAngles():
             lAnkle = str(joinangle[5])
             
             feedbackBox.insert(END,"---------------------------------------")
-            feedbackBox.insert(END,"left hip " + lHip[1:-2] + "      /   "  + "right hip "+ rHip[1:-2])
-            feedbackBox.insert(END,"left knee " + lKnee[1:-2] + "   /   "  +  "right knee "+ rKnee[1:-2])
-            feedbackBox.insert(END,"left ankle " + lAnkle[1:-2] + "  /   "  +  "right ankle "+ rAnkle[1:-2])
+            feedbackBox.insert(END,"left hip " + lHip + "      /   "  + "right hip "+ rHip)
+            feedbackBox.insert(END,"left knee " + lKnee + "   /   "  +  "right knee "+ rKnee)
+            feedbackBox.insert(END,"left ankle " + lAnkle + "  /   "  +  "right ankle "+ rAnkle)
             
         else:
             try:
@@ -1554,6 +1867,7 @@ def btAngles():
         
 def btTH(event):
     global Canal1_Env_Total, Canal2_Env_Total, Canal3_Env_Total, Canal4_Env_Total
+    global Canal_Array_Totaln
    
     try:
         
@@ -1561,11 +1875,11 @@ def btTH(event):
         th2 = float(thBox2.get())
         th3 = float(thBox3.get())
         th4 = float(thBox4.get())
-
-        c1normalized, on1 = thValues(Canal1_Env_Total, th1)
-        c2normalized, on2 = thValues(Canal2_Env_Total, th2)
-        c3normalized, on3 = thValues(Canal3_Env_Total, th3)
-        c4normalized, on4 = thValues(Canal4_Env_Total, th4)
+        
+        c1normalized, on1 = thValues(Canal_Array_Totaln[0], th1)
+        c2normalized, on2 = thValues(Canal_Array_Totaln[1], th2)
+        c3normalized, on3 = thValues(Canal_Array_Totaln[2], th3)
+        c4normalized, on4 = thValues(Canal_Array_Totaln[3], th4)
         
         onset.set("%.3f" % on1)
         offset.set("%.3f" % on1)
@@ -1672,6 +1986,17 @@ def chBox4(event):
         EP.set(0)
         assistanceBox.configure(bg="white")
         cuadroRepeat.configure(bg="white")
+def chBox5(event):
+    if EI.get() == 0:
+        EI.set(1)
+        assistanceBox.configure(bg=activebuttonCanFrame)
+        cuadroRepeat.configure(bg=activebuttonCanFrame)
+        stiffnessBox.configure(bg=activebuttonCanFrame)
+    else:
+        EI.set(0)
+        assistanceBox.configure(bg="white")
+        cuadroRepeat.configure(bg="white")
+        stiffnessBox.configure(bg="white")
             
 def marckboxes():
     
@@ -1679,16 +2004,21 @@ def marckboxes():
     MD1=MD.get()
     OD1=OD.get()
     EP1=EP.get()
-    if (MS1 == 1) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0):
+    EI1=EI.get()
+    
+    if (MS1 == 1) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0) & (EI1 == 0):
         cuadroRepeat.configure(bg=activebuttonCanFrame)
-    if (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0):
+    if (MS1 == 0) & (MD1 == 1) & (OD1 == 0) & (EP1 == 0) & (EI1 == 0):
         assistanceBox.configure(bg=activebuttonCanFrame)
         stiffnessBox.configure(bg=activebuttonCanFrame)
         cuadroRepeat.configure(bg=activebuttonCanFrame)
-    if (MS1 == 0) & (MD1 == 0) & (OD1 == 1) & (EP1 == 0):
+    if (MS1 == 0) & (MD1 == 0) & (OD1 == 1) & (EP1 == 0) & (EI1 == 0):
         assistanceBox.configure(bg=activebuttonCanFrame)
         cuadroRepeat.configure(bg=activebuttonCanFrame)
-    if (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 1):
+    if (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 1) & (EI1 == 0):
+        assistanceBox.configure(bg=activebuttonCanFrame)
+        cuadroRepeat.configure(bg=activebuttonCanFrame)
+    if (MS1 == 0) & (MD1 == 0) & (OD1 == 0) & (EP1 == 0) & (EI1 == 1):
         assistanceBox.configure(bg=activebuttonCanFrame)
         cuadroRepeat.configure(bg=activebuttonCanFrame)
     else:
@@ -1699,7 +2029,7 @@ def marckboxes():
 
 #%%  INTERFAZ     
 root=Tk()
-root.title("The EXTEND Project")
+root.title("The INTENTION Project")
 root.config(bg="black")
 ##
 
@@ -1752,6 +2082,7 @@ root.bind('<exclam>',chBox1)
 root.bind('<quotedbl>',chBox2)
 root.bind('<periodcentered>',chBox3)
 root.bind('<dollar>',chBox4)
+root.bind('<percent>',chBox5)
 
 root.bind('F',Footpressure)
 root.bind('B',battery)
@@ -1809,6 +2140,7 @@ MS = IntVar()
 MD = IntVar()
 OD = IntVar()
 EP = IntVar()
+EI = IntVar()
 
 
 #bool(Stop_Run)
@@ -1901,6 +2233,8 @@ checkboxOD.place(x=260, y=78)
 checkboxEP = Checkbutton(CanFrame,variable=EP, onvalue=1, offvalue=0, bg=bgCanFrame, fg=fgCanFrame, activebackground=bgCanFrame, text="EMG Proportional")
 #checkboxEP.grid(row=2, column=3, padx=5, pady=5, sticky="w") 
 checkboxEP.place(x=400, y=78)
+checkboxEI = Checkbutton(CanFrame,variable=EI, onvalue=1, offvalue=0, bg=bgCanFrame, fg=fgCanFrame, activebackground=bgCanFrame, text="EMG Intra")
+checkboxEI.place(x=550, y=78)
 
 #alpha1Label=Label(CanFrame, bg="#FAF3DD", text="Alpha1:")
 ##alpha1Label.grid(row=1, column=0, padx=10, pady=10)
