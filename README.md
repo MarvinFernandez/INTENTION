@@ -3,4 +3,4 @@ The INTENTION project aims to research  how the exoskeleton control impacts the 
 
 We designed three control methods to assist walking for the Exo-H3 exoskeleton: 1) a trajectory-controlled walking assistance, 2) an admittance controller, and 3) the onsent-EMG controller (by sensing the user's muscle onset at each step, the admittance-assisted control is triggered). 
 
-INTENTION - Improving Human-Robot Interaction through EMG-Onset Controller for Lower Limb Exoskeletons, FSTP-2 subproject of the EUROBENCH – European Robotic Framework for Bipedal Locomotion Benchmarking Project, funded by the European Union's Horizon 2020 research and innovation program under the agreement grant number 779963.
+INTENTION - Improving Human-Robot Interaction through EMG-Onset Controller for Lower Limb Exoskeletons, FSTP-2 subproject of the EUROBENCH – European Robotic Framework for Bipedal Locomotion Benchmarking Project, funded by the European Union's Horizon 2020 research and innovation program under the grant agreement No. 779963
